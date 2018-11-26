@@ -11,20 +11,21 @@ enum MENUTYPE
 class MenuItem
 {
 public:
-	MenuItem(int index);
+	MenuItem(int index,QString title);
 	~MenuItem();
 	MenuItem operator=(const MenuItem& source);
-	QString ExportStr();
+	QString ExportItemStr();
 
 	int index;
 	int prev_index;
-	int sub_index[5];
 	MENUTYPE type;
+	int sub_index[5];
+	int func_index;
+	int para_index;
 	int min;
 	int max;
 	int step;
 	bool used;
 	QString title;
-
 
 };

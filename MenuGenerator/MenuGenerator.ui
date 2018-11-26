@@ -29,7 +29,7 @@
     <property name="checkable">
      <bool>false</bool>
     </property>
-    <widget class="QListView" name="listView">
+    <widget class="QListView" name="ItemListView">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -52,7 +52,7 @@
     <property name="title">
      <string>功能列表</string>
     </property>
-    <widget class="QListView" name="listView_2">
+    <widget class="QListView" name="FuncListView">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -292,17 +292,17 @@
      </item>
      <item>
       <property name="text">
+       <string>执行功能</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>整型调整</string>
       </property>
      </item>
      <item>
       <property name="text">
        <string>开关型调整</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>执行功能</string>
       </property>
      </item>
     </widget>
@@ -420,6 +420,9 @@
      </widget>
     </widget>
     <widget class="QGroupBox" name="SubFuncGroup">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -431,7 +434,7 @@
      <property name="title">
       <string>功能设置</string>
      </property>
-     <widget class="QComboBox" name="comboBox_6">
+     <widget class="QComboBox" name="FuncBox">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -439,6 +442,9 @@
         <width>101</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="currentText">
+       <string/>
       </property>
      </widget>
      <widget class="QSpinBox" name="spinBox_10">
@@ -453,6 +459,9 @@
      </widget>
     </widget>
     <widget class="QGroupBox" name="SubParaGroup">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -567,7 +576,7 @@
     <property name="title">
      <string>变量列表</string>
     </property>
-    <widget class="QListView" name="listView_3">
+    <widget class="QListView" name="ParaListView">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -584,7 +593,7 @@
       <x>400</x>
       <y>300</y>
       <width>141</width>
-      <height>251</height>
+      <height>211</height>
      </rect>
     </property>
     <property name="title">
@@ -596,7 +605,7 @@
        <x>10</x>
        <y>20</y>
        <width>121</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -607,9 +616,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>80</y>
+       <y>70</y>
        <width>121</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -620,9 +629,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>140</y>
+       <y>120</y>
        <width>121</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -633,9 +642,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>200</y>
+       <y>170</y>
        <width>121</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">

@@ -1,3 +1,6 @@
-﻿  MenuGenerator.cpp
-  MenuItem.cpp
+﻿  Moc'ing MenuGenerator.h...
+  Uic'ing MenuGenerator.ui...
+  moc_MenuGenerator.cpp
+  MenuGenerator.cpp
+  main.cpp
   MenuGenerator.vcxproj -> F:\MenuGenerator\MenuGenerator\x64\Debug\MenuGenerator.exe
