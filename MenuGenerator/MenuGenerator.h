@@ -20,7 +20,9 @@ private:
 	QList<QString> FuncList;
 	QStandardItemModel *FuncItemModel;
 	int Currentindex;
+	bool On_ItemEdit = false;
 	void Refresh_Property(void);
+	void Refresh_SubmenuEnable(void);
 private slots:
 	void on_NewItemButton_clicked();
 	void on_NewFuncButton_clicked();
@@ -36,4 +38,15 @@ private slots:
 	void on_SubmenuIndex3_valueChanged(int val);
 	void on_SubmenuIndex4_valueChanged(int val);
 	void on_SubmenuIndex5_valueChanged(int val);
+	void on_ItemListView_clicked();
+	void on_NameEdit_editingFinished();
+	void on_MenutypeBox_currentIndexChanged(int index);
+	void on_FuncBox_currentIndexChanged(int index);
+	void on_FuncIndex_valueChanged(int val);
+	void on_ParaBox_currentIndexChanged(int index);
+	void on_ParaIndex_valueChanged(int val);
+	void on_ParaMax_valueChanged(int val);
+	void on_ParaMin_valueChanged(int val);
+	void on_ParaStep_valueChanged(int val);
+	void on_SaveButton_clicked();
 };
