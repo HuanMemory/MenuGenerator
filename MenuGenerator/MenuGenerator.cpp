@@ -405,6 +405,71 @@ void MenuGenerator::on_SaveButton_clicked()
 	file.close();
 }
 
+void MenuGenerator::on_OpenButton_clicked()
+{
+	QString path = QFileDialog::getOpenFileName(this, "Open", ".", tr("Menu Json File(*.json)"));
+	if (path.isEmpty())
+		return;
+	QFile file(path);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		QMessageBox::critical(NULL, "ERROR", "Can not open file!", QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	QByteArray byteArray = file.readAll();
+	file.close();
+	QJsonParseError json_error;
+	QJsonDocument jsonDocument(QJsonDocument::fromJson(byteArray, &json_error));
+	if (json_error.error != QJsonParseError::NoError)
+	{
+		QMessageBox::critical(NULL, "ERROR", "Wrong File Content!", QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	QJsonObject json = jsonDocument.object();
+	QJsonArray FuncArray;
+	QJsonArray ParaArray;
+	QJsonArray ItemArray;
+	MenuItemModel->clear();
+	FuncItemModel->clear();
+	ParaItemModel->clear();
+	MenuItemList.clear();
+	MenuList.clear();
+	FuncList.clear();
+	ParaList.clear();
+	Title = json.value("title").toString();
+	Max_Layers = json.value("layers").toInt();
+	ItemArray = json.value("Item").toArray();
+	LoadItemfromJsonArray(ItemArray);
+	FuncArray = json.value("Func").toArray();
+	for (int i = 0; i < FuncArray.count(); i++)
+	{
+		QString Func_name = FuncArray[i].toString();
+		QStandardItem *item = new QStandardItem(Func_name);
+		FuncItemModel->appendRow(item);
+		FuncList.append(Func_name);
+	}
+	ParaArray = json.value("Para").toArray();
+	for (int i = 0; i < ParaArray.count(); i++)
+	{
+		QString Para_name = ParaArray[i].toString();
+		QStandardItem *item = new QStandardItem(Para_name);
+		ParaItemModel->appendRow(item);
+		ParaList.append(Para_name);
+	}
+	Currentindex = 0;
+	Refresh_All();
+	QString time = json.value("time").toString();
+	QString description = json.value("description").toString();
+	QMessageBox msgBox;
+	msgBox.setIcon(QMessageBox::Information);
+	msgBox.setText("Success.");
+	msgBox.setInformativeText("Last saved : " + time);
+	msgBox.setDetailedText(description);
+	msgBox.setStandardButtons(QMessageBox::Yes);
+	msgBox.setDefaultButton(QMessageBox::Yes);
+	msgBox.exec();
+}
+
 void MenuGenerator::Refresh_SubmenuEnable()
 {	//设置子菜单设置使能
 	bool SubmenuEnable[5] = { false,false,false,false,false };
@@ -432,11 +497,28 @@ void MenuGenerator::Refresh_SubmenuEnable()
 
 void MenuGenerator::on_TitleEdit_editingFinished()
 {
+	//调整标题
+	if (On_ItemEdit)
+		return;
 	Title = ui.TitleEdit->text();
 }
 void MenuGenerator::on_LayersBox_valueChanged(int val)
 {
+	//调整最大层数
+	if (On_ItemEdit)
+		return;
 	Max_Layers = val;
+}
+
+void MenuGenerator::LoadItemfromJsonArray(QJsonArray ItemArray)
+{
+	for (int i = 0; i < ItemArray.count(); i++)
+	{
+		MenuItemList.append(MenuItem(ItemArray[i].toObject()));
+		QStandardItem *item = new QStandardItem(MenuItemList[i].title);
+		MenuItemModel->appendRow(item);
+		MenuList.append(MenuItemList[i].title);
+	}
 }
 
 void MenuGenerator::Refresh_Property()
@@ -528,5 +610,14 @@ void MenuGenerator::Refresh_Property()
 		ui.ParaIndex->setValue(MenuItemList[Currentindex].para_index);
 		break;
 	}
+	On_ItemEdit = false;
+}
+
+void MenuGenerator::Refresh_All()
+{
+	On_ItemEdit = true;
+	ui.TitleEdit->setText(Title);
+	ui.LayersBox->setValue(Max_Layers);
+	Refresh_Property();
 	On_ItemEdit = false;
 }

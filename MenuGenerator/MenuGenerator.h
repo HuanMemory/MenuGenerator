@@ -32,8 +32,10 @@ private:
 	int Max_Layers;
 	int Currentindex;
 	bool On_ItemEdit = false;
+	void LoadItemfromJsonArray(QJsonArray);
 	void Refresh_Property(void);
 	void Refresh_SubmenuEnable(void);
+	void Refresh_All(void);
 private slots:
 	void on_NewItemButton_clicked();
 	void on_NewFuncButton_clicked();
@@ -60,6 +62,7 @@ private slots:
 	void on_ParaMin_valueChanged(int val);
 	void on_ParaStep_valueChanged(int val);
 	void on_SaveButton_clicked();
+	void on_OpenButton_clicked();
 	void on_TitleEdit_editingFinished();
 	void on_LayersBox_valueChanged(int val);
 };
