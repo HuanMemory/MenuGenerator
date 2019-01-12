@@ -721,12 +721,12 @@
      </property>
      <property name="font">
       <font>
-       <family>微软雅黑</family>
-       <pointsize>12</pointsize>
+       <family>Courier New</family>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="maxLength">
-      <number>7</number>
+      <number>20</number>
      </property>
     </widget>
    </widget>

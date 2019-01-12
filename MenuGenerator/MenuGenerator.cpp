@@ -35,7 +35,7 @@ MenuGenerator::MenuGenerator(QWidget *parent)
 	ui.SubmenuIndex4->setMaximum(MenuList.count() - 1);
 	ui.SubmenuIndex5->setMaximum(MenuList.count() - 1);
 	ui.LayersBox->setValue(0);
-	Max_Layers = 0;
+	Max_Layers = 3;
 	Currentindex = 0;
 	Refresh_Property();
 }
@@ -94,6 +94,8 @@ void MenuGenerator::on_NewParaButton_clicked()
 void MenuGenerator::on_ExportButton_clicked()
 {	//导出菜单数据文件
 	QString path = QFileDialog::getSaveFileName(this, "Export Menu File", "./menu_data.h", tr("C Header Files(*.h)"));
+	if (path.isEmpty())
+		return;
 	QFile f(path);
 	if (!f.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
@@ -103,7 +105,7 @@ void MenuGenerator::on_ExportButton_clicked()
 	QTextStream out(&f);
 	QDateTime current_date_time = QDateTime::currentDateTime();
 	QString DataTime = current_date_time.toString(Qt::ISODate);
-	out << "#ifndef __MENU_DATA_H__\n#define __MENU_DATA_H__\n"
+	out << "#ifndef __MENU_DATA_H__\n#define __MENU_DATA_H__\n\n"
 		<< "/******************************\n"
 		<< "*Creat Time : "
 		<< DataTime
@@ -124,13 +126,13 @@ void MenuGenerator::on_ExportButton_clicked()
 		else
 			out << "\n";
 	}
-	out << "};\n";
+	out << "};\n\n";
 
 	out << "//Variable Definition\n";			//变量定义
 	out << "struct\n{\n";
 	for (int i = 0; i < ParaList.count(); i++)
 		out << "  int " << ParaList[i] << ";\n";
-	out << "}Initialization;\n";
+	out << "}Initialization;\n\n";
 
 	out << "//Variable List\nconst void *Para_list[] = \n{\n";
 	for (int i = 0; i < ParaList.count(); i++)	//变量列表
@@ -142,60 +144,21 @@ void MenuGenerator::on_ExportButton_clicked()
 			out << "\n";
 	}
 		
-	out << "};\n";
-
-	/*
-	typedef struct
-	{
-		char Title[8];
-		enum MENUTYPE Type;
-		int Submenu[5];		//bool	//int min max step
-	}MenuInfoItem;
-	*/
+	out << "};\n\n";
 
 	out << "//Menu List\nconst MenuInfoItem Menu_list[] = \n{\n";
 	for (int i = 0; i < MenuItemList.count(); i++)	//菜单列表
 	{
-		out << "  { .Title = \"" << MenuItemList[i].title << "\",";
-		out << " .Type = " << MenuItemList[i].type << ",";
-		out << " .Submenu = {";
-		switch (MenuItemList[i].type)
-		{
-		case MENUTYPE_MENU:
-			for (int j = 0; j < 5; j++)
-			{
-				out << QString::number(MenuItemList[i].sub_index[j]);
-				if (j != 4)
-					out << ",";
-			}
-			break;
-		case MENUTYPE_FUNC:
-			out << QString::number(MenuItemList[i].func_index);
-			out << ",0,0,0,0";
-			break;
-		case MENUTYPE_BOOL:
-			out << QString::number(MenuItemList[i].para_index);
-			out << ",0,0,0,0";
-			break;
-		case MENUTYPE_INT:
-			out << QString::number(MenuItemList[i].para_index) << ",";
-			out << QString::number(MenuItemList[i].min) << ",";
-			out << QString::number(MenuItemList[i].max) << ",";
-			out << QString::number(MenuItemList[i].step) << ",0";
-			break;
-		}
-		out << "} }";
+		out << MenuItemList[i].ExportItemStr();
 		if (i != MenuItemList.count() - 1)
 			out << ",";
 		out << "\n";
 	}
-	out << "};\n";
+	out << "};\n\n";
 
 	out << "#endif";
 	f.close();
 }
-
-
 
 void MenuGenerator::on_SubmenuBox1_currentIndexChanged(int index)
 {	//将子菜单ComboBox和Value联动
@@ -401,20 +364,45 @@ void MenuGenerator::on_ParaStep_valueChanged(int val)
 
 void MenuGenerator::on_SaveButton_clicked()
 {
-	int MenuItemList_size = MenuItemList.size();
-	int MenuList_size = 0;
-	int MenuItemModel_size = 0;
-	int ParaList_size = 0;
-	int ParaItemModel_size = 0;
-	int FuncList_size = 0;
-	int FuncItemModel_size = 0;
-	QList<MenuItem> MenuItemList;
-	QList<QString> MenuList;
-	QStandardItemModel *MenuItemModel;
-	QList<QString> ParaList;
-	QStandardItemModel *ParaItemModel;
-	QList<QString> FuncList;
-	QStandardItemModel *FuncItemModel;
+	QString path = QFileDialog::getSaveFileName(this, "Save", "./Menu.json", tr("Menu Json File(*.json)"));
+	if (path.isEmpty())
+		return;
+	QFile file(path);
+	if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+	{
+		QMessageBox::critical(NULL, "ERROR", "Can not open/creat file!", QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	QTextStream save(&file);
+	QJsonObject json;
+	QJsonArray FuncArray;
+	QJsonArray ParaArray;
+	QJsonArray ItemArray;
+	QJsonDocument document;
+	QByteArray byte_array;
+	QString JsonStr;
+	json.insert("title", Title);
+	json.insert("layers", Max_Layers);
+	QString description = QInputDialog::getText(this, tr("Log"),
+		tr("Description:"), QLineEdit::Normal);
+	json.insert("description", description);
+	QDateTime current_date_time = QDateTime::currentDateTime();
+	QString DataTime = current_date_time.toString(Qt::ISODate);
+	json.insert("time", DataTime);
+	for (int i = 0; i < FuncList.count(); i++)
+		FuncArray.append(FuncList[i]);
+	for (int i = 0; i < ParaList.count(); i++)
+		ParaArray.append(ParaList[i]);
+	for (int i = 0; i < MenuItemList.count(); i++)
+		ItemArray.append(MenuItemList[i].ExportItemJson());
+	json.insert("Item", ItemArray);
+	json.insert("Func", FuncArray);
+	json.insert("Para", ParaArray);
+	document.setObject(json);
+	byte_array = document.toJson(QJsonDocument::Indented);
+	JsonStr = QString(byte_array);
+	save << JsonStr;
+	file.close();
 }
 
 void MenuGenerator::Refresh_SubmenuEnable()

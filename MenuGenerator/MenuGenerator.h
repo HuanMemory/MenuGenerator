@@ -8,6 +8,10 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include <QTextStream>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonParseError>
 
 class MenuGenerator : public QMainWindow
 {
@@ -58,5 +62,4 @@ private slots:
 	void on_SaveButton_clicked();
 	void on_TitleEdit_editingFinished();
 	void on_LayersBox_valueChanged(int val);
-
 };
