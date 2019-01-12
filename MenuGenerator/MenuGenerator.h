@@ -24,6 +24,8 @@ private:
 	QStandardItemModel *ParaItemModel;
 	QList<QString> FuncList;
 	QStandardItemModel *FuncItemModel;
+	QString Title;
+	int Max_Layers;
 	int Currentindex;
 	bool On_ItemEdit = false;
 	void Refresh_Property(void);
@@ -54,4 +56,7 @@ private slots:
 	void on_ParaMin_valueChanged(int val);
 	void on_ParaStep_valueChanged(int val);
 	void on_SaveButton_clicked();
+	void on_TitleEdit_editingFinished();
+	void on_LayersBox_valueChanged(int val);
+
 };

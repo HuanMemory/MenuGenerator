@@ -34,6 +34,8 @@ MenuGenerator::MenuGenerator(QWidget *parent)
 	ui.SubmenuIndex3->setMaximum(MenuList.count() - 1);
 	ui.SubmenuIndex4->setMaximum(MenuList.count() - 1);
 	ui.SubmenuIndex5->setMaximum(MenuList.count() - 1);
+	ui.LayersBox->setValue(0);
+	Max_Layers = 0;
 	Currentindex = 0;
 	Refresh_Property();
 }
@@ -90,7 +92,7 @@ void MenuGenerator::on_NewParaButton_clicked()
 }
 
 void MenuGenerator::on_ExportButton_clicked()
-{
+{	//导出菜单数据文件
 	QString path = QFileDialog::getSaveFileName(this, "Export Menu File", "./menu_data.h", tr("C Header Files(*.h)"));
 	QFile f(path);
 	if (!f.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -106,7 +108,8 @@ void MenuGenerator::on_ExportButton_clicked()
 		<< "*Creat Time : "
 		<< DataTime
 		<< "\n******************************/\n\n";
-
+	out << "#define MENU_MAX_LAYERS " << QString::number(Max_Layers);
+	out << "\n#define MENU_TITLE \"" << Title << "\"\n\n";
 	out << "//Function Declaration\n";			//函数声明
 	for (int i = 0; i < FuncList.count(); i++)
 		out << "void " << FuncList[i] << "(void);\n";
@@ -437,6 +440,15 @@ void MenuGenerator::Refresh_SubmenuEnable()
 	ui.SubmenuIndex4->setEnabled(SubmenuEnable[3]);
 	ui.SubmenuBox5->setEnabled(SubmenuEnable[4]);
 	ui.SubmenuIndex5->setEnabled(SubmenuEnable[4]);
+}
+
+void MenuGenerator::on_TitleEdit_editingFinished()
+{
+	Title = ui.TitleEdit->text();
+}
+void MenuGenerator::on_LayersBox_valueChanged(int val)
+{
+	Max_Layers = val;
 }
 
 void MenuGenerator::Refresh_Property()
