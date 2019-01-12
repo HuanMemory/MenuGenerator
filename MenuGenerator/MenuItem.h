@@ -25,7 +25,5 @@ public:
 	int min;
 	int max;
 	int step;
-	bool used;
 	QString title;
-
 };

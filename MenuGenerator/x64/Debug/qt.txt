@@ -1,1 +1,0 @@
-Uic'ing MenuGenerator.ui...;D:\Qt\Qt5.12.0\5.12.0\msvc2015_64\bin\uic.exe;"F:\MenuGenerator\MenuGenerator\MenuGenerator\MenuGenerator.ui" -o ".\GeneratedFiles\ui_MenuGenerator.h"

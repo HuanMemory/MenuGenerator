@@ -36,15 +36,11 @@ MenuGenerator::MenuGenerator(QWidget *parent)
 	ui.SubmenuIndex5->setMaximum(MenuList.count() - 1);
 	Currentindex = 0;
 	Refresh_Property();
-	//QString str = MenuItemList[0].ExportItemStr();
-	//qDebug(qPrintable(str));
-	//connect(ui.checkBox, SIGNAL(clicked()), this, SLOT(on_checkBox_clicked()));
 }
 
 void MenuGenerator::on_NewItemButton_clicked()
 {	//新建菜单项
 	int index;
-	qDebug("New Item");
 	QString str = "Menu" + QString::number(MenuList.count() + 1);
 	QStandardItem *item = new QStandardItem(str);
 	MenuItemModel->appendRow(item);
@@ -57,7 +53,6 @@ void MenuGenerator::on_NewItemButton_clicked()
 
 void MenuGenerator::on_NewFuncButton_clicked()
 {	//新建功能
-	qDebug("New Function");
 	bool ok = true;										//输入函数名
 	QString str = QInputDialog::getText(this, "Function name", "Function:",			
 		QLineEdit::Normal,"NewFunction" + QString::number(FuncList.count() + 1),&ok);
@@ -77,7 +72,6 @@ void MenuGenerator::on_NewFuncButton_clicked()
 
 void MenuGenerator::on_NewParaButton_clicked()
 {	//新建变量
-	qDebug("New Parameter");
 	bool ok = true;	
 	QString str = QInputDialog::getText(this, "Parameter name", "Parameter:",
 		QLineEdit::Normal, "NewParameter" + QString::number(ParaList.count() + 1), &ok);
@@ -95,11 +89,110 @@ void MenuGenerator::on_NewParaButton_clicked()
 	ParaList.append(str);
 }
 
-void MenuGenerator::on_ClearButton_clicked()
-{	//清楚多余项
-	qDebug("Clear Items");
+void MenuGenerator::on_ExportButton_clicked()
+{
+	QString path = QFileDialog::getSaveFileName(this, "Export Menu File", "./menu_data.h", tr("C Header Files(*.h)"));
+	QFile f(path);
+	if (!f.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		QMessageBox::critical(NULL, "ERROR", "Can not open/creat file!", QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	QTextStream out(&f);
+	QDateTime current_date_time = QDateTime::currentDateTime();
+	QString DataTime = current_date_time.toString(Qt::ISODate);
+	out << "#ifndef __MENU_DATA_H__\n#define __MENU_DATA_H__\n"
+		<< "/******************************\n"
+		<< "*Creat Time : "
+		<< DataTime
+		<< "\n******************************/\n\n";
 
+	out << "//Function Declaration\n";			//函数声明
+	for (int i = 0; i < FuncList.count(); i++)
+		out << "void " << FuncList[i] << "(void);\n";
+	out << "\n";
+
+	out << "//Function List\nvoid (*Func_list[])(void) = \n{\n";
+	for (int i = 0; i < FuncList.count(); i++)	//函数列表
+	{
+		out << "  &" << FuncList[i];
+		if (i != FuncList.count() - 1)
+			out << ",\n";
+		else
+			out << "\n";
+	}
+	out << "};\n";
+
+	out << "//Variable Definition\n";			//变量定义
+	out << "struct\n{\n";
+	for (int i = 0; i < ParaList.count(); i++)
+		out << "  int " << ParaList[i] << ";\n";
+	out << "}Initialization;\n";
+
+	out << "//Variable List\nconst void *Para_list[] = \n{\n";
+	for (int i = 0; i < ParaList.count(); i++)	//变量列表
+	{
+		out << "  &Initialization." << ParaList[i];
+		if (i != ParaList.count() - 1)
+			out << ",\n";
+		else
+			out << "\n";
+	}
+		
+	out << "};\n";
+
+	/*
+	typedef struct
+	{
+		char Title[8];
+		enum MENUTYPE Type;
+		int Submenu[5];		//bool	//int min max step
+	}MenuInfoItem;
+	*/
+
+	out << "//Menu List\nconst MenuInfoItem Menu_list[] = \n{\n";
+	for (int i = 0; i < MenuItemList.count(); i++)	//菜单列表
+	{
+		out << "  { .Title = \"" << MenuItemList[i].title << "\",";
+		out << " .Type = " << MenuItemList[i].type << ",";
+		out << " .Submenu = {";
+		switch (MenuItemList[i].type)
+		{
+		case MENUTYPE_MENU:
+			for (int j = 0; j < 5; j++)
+			{
+				out << QString::number(MenuItemList[i].sub_index[j]);
+				if (j != 4)
+					out << ",";
+			}
+			break;
+		case MENUTYPE_FUNC:
+			out << QString::number(MenuItemList[i].func_index);
+			out << ",0,0,0,0";
+			break;
+		case MENUTYPE_BOOL:
+			out << QString::number(MenuItemList[i].para_index);
+			out << ",0,0,0,0";
+			break;
+		case MENUTYPE_INT:
+			out << QString::number(MenuItemList[i].para_index) << ",";
+			out << QString::number(MenuItemList[i].min) << ",";
+			out << QString::number(MenuItemList[i].max) << ",";
+			out << QString::number(MenuItemList[i].step) << ",0";
+			break;
+		}
+		out << "} }";
+		if (i != MenuItemList.count() - 1)
+			out << ",";
+		out << "\n";
+	}
+	out << "};\n";
+
+	out << "#endif";
+	f.close();
 }
+
+
 
 void MenuGenerator::on_SubmenuBox1_currentIndexChanged(int index)
 {	//将子菜单ComboBox和Value联动
@@ -209,6 +302,8 @@ void MenuGenerator::on_NameEdit_editingFinished()
 
 void MenuGenerator::on_MenutypeBox_currentIndexChanged(int index)
 {	//改变项类型
+	if (On_ItemEdit)
+		return;
 	switch (index)
 	{
 	case 0:
@@ -236,7 +331,7 @@ void MenuGenerator::on_FuncBox_currentIndexChanged(int index)
 }
 
 void MenuGenerator::on_FuncIndex_valueChanged(int val)
-{
+{	//目标函数设置
 	if (On_ItemEdit)
 		return;
 	ui.FuncBox->setCurrentIndex(val);
@@ -252,7 +347,7 @@ void MenuGenerator::on_ParaBox_currentIndexChanged(int index)
 }
 
 void MenuGenerator::on_ParaIndex_valueChanged(int val)
-{
+{	//目标变量设置
 	if (On_ItemEdit)
 		return;
 	ui.ParaBox->setCurrentIndex(val);
@@ -261,6 +356,9 @@ void MenuGenerator::on_ParaIndex_valueChanged(int val)
 
 void MenuGenerator::on_ParaMax_valueChanged(int val)
 {
+	//设置调整最大值
+	if (On_ItemEdit)
+		return;
 	MenuItemList[Currentindex].max = val;
 	if (val < MenuItemList[Currentindex].min)
 	{
@@ -275,7 +373,9 @@ void MenuGenerator::on_ParaMax_valueChanged(int val)
 }
 
 void MenuGenerator::on_ParaMin_valueChanged(int val)
-{
+{	//设置调整最小值
+	if (On_ItemEdit)
+		return;
 	MenuItemList[Currentindex].min = val;
 	if (val > MenuItemList[Currentindex].max)
 	{
@@ -290,7 +390,9 @@ void MenuGenerator::on_ParaMin_valueChanged(int val)
 }
 
 void MenuGenerator::on_ParaStep_valueChanged(int val)
-{
+{	//设置调整步长
+	if (On_ItemEdit)
+		return;
 	MenuItemList[Currentindex].step = val;
 }
 
@@ -303,7 +405,7 @@ void MenuGenerator::on_SaveButton_clicked()
 	int ParaItemModel_size = 0;
 	int FuncList_size = 0;
 	int FuncItemModel_size = 0;
-		QList<MenuItem> MenuItemList;
+	QList<MenuItem> MenuItemList;
 	QList<QString> MenuList;
 	QStandardItemModel *MenuItemModel;
 	QList<QString> ParaList;

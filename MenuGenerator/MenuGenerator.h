@@ -4,6 +4,11 @@
 #include "ui_MenuGenerator.h"
 #include "MenuItem.h"
 #include <QStandardItem>
+#include <QFile>
+#include <QFileDialog>
+#include <QDateTime>
+#include <QTextStream>
+
 class MenuGenerator : public QMainWindow
 {
 	Q_OBJECT
@@ -27,7 +32,7 @@ private slots:
 	void on_NewItemButton_clicked();
 	void on_NewFuncButton_clicked();
 	void on_NewParaButton_clicked();
-	void on_ClearButton_clicked();
+	void on_ExportButton_clicked();
 	void on_SubmenuBox1_currentIndexChanged(int index);
 	void on_SubmenuBox2_currentIndexChanged(int index);
 	void on_SubmenuBox3_currentIndexChanged(int index);

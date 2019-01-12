@@ -16,7 +16,6 @@ MenuItem::MenuItem(int index, QString title)
 		= this->sub_index[4] = 0;
 	this->title = title;
 	this->type = MENUTYPE_MENU;
-	this->used = false;
 }
 
 
@@ -34,7 +33,6 @@ MenuItem MenuItem::operator=(const MenuItem & source)
 	for(int i = 0;i<5;i++)
 		target.sub_index[i] = source.sub_index[i];
 	target.type = source.type;
-	target.used = source.used;
 	return target;
 }
 
