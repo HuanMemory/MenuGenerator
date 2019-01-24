@@ -1,0 +1,10 @@
+﻿  Moc'ing MenuGenerator.h...
+  Rcc'ing MenuGenerator.qrc...
+  Uic'ing MenuGenerator.ui...
+  RCC: Warning: No resources in 'F:\MenuGenerator\MenuGenerator\MenuGenerator\MenuGenerator.qrc'.
+  main.cpp
+  MenuGenerator.cpp
+  MenuItem.cpp
+  moc_MenuGenerator.cpp
+  qrc_MenuGenerator.cpp
+  MenuGenerator.vcxproj -> F:\MenuGenerator\MenuGenerator\x64\Release\MenuGenerator.exe

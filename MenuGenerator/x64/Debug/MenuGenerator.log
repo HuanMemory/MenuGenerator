@@ -1,3 +1,6 @@
-﻿  MenuGenerator.cpp
+﻿  Uic'ing MenuGenerator.ui...
+  moc_MenuGenerator.cpp
+  MenuGenerator.cpp
+  main.cpp
   MenuGenerator.vcxproj -> F:\MenuGenerator\MenuGenerator\x64\Debug\MenuGenerator.exe
   MenuGenerator.vcxproj -> F:\MenuGenerator\MenuGenerator\x64\Debug\MenuGenerator.pdb (Full PDB)

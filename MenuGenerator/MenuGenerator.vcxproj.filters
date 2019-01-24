@@ -59,5 +59,15 @@
     <ClInclude Include="MenuItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MenuGenerator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\icon.png" />
+    <Image Include="..\..\icon.ico" />
   </ItemGroup>
 </Project>
